@@ -45,3 +45,64 @@ fetch('/get_coordinates', { method: 'GET' })
     .catch(error => {
         console.error('Error loading initial coordinates:', error);
     });
+
+function updateDeviceLocation() {
+    // Check if geolocation is available in the browser
+    if ("geolocation" in navigator) {
+        navigator.geolocation.getCurrentPosition(position => {
+            const { latitude, longitude } = position.coords;
+
+            // Remove existing location marker
+            if (typeof deviceMarker !== "undefined") {
+                map.removeLayer(deviceMarker);
+            }
+
+            // Add a marker for the device's location
+            deviceMarker = L.marker([latitude, longitude]).addTo(map);
+            deviceMarker.bindPopup("Your Location").openPopup();
+
+            // Pan the map to the device's location
+            // map.setView([latitude, longitude], 13);
+        }, error => {
+            console.error("Error getting device location:", error.message);
+        });
+    } else {
+        console.error("Geolocation is not available in this browser.");
+    }
+}
+
+function handleFormSubmission(event) {
+    event.preventDefault(); // Prevent the default form submission
+
+    // Get the latitude and longitude values from the form
+    const icao = document.getElementById('icao').value;
+
+    // Send the icao code to flask
+    fetch('/set_airport', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(icao),
+    })
+    .then(response => response.json())
+    .then(data => {
+        // Handle the response from the server, which may include updated marker data
+        const {lat, lon} = data;
+        map.setView([lat, lon], 12);
+    })
+    .catch(error => {
+        console.error('Error setting airport:', error);
+    });
+
+    // Clear the form fields
+    // document.getElementById('latitude').value = '';
+}
+
+document.getElementById('airportForm').addEventListener('submit', handleFormSubmission);
+
+// Call the updateDeviceLocation function to initially set the device's location
+updateDeviceLocation();
+
+// Set an interval to periodically update the device's location
+setInterval(updateDeviceLocation, 300000); // Update every 5 minutes.
