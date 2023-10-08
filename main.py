@@ -3,6 +3,7 @@
 import flask
 from flask import jsonify, request
 import opensky_api
+import threading
 
 # Local Imports
 import airportsdata as apd
@@ -100,7 +101,6 @@ def get_coordinates():
 def update_coordinates():
     js_planes = []
     for plane in planes:
-        plane.timeStep()
         js_planes.append(vars(plane))
     return jsonify(js_planes)
 
@@ -130,19 +130,14 @@ def set_airport():
 
 # -------- GENERAL FUNCTIONS ---------
 def get_updated_states():
-    sys.stdout.flush()
-    try:
-        new_states = opensky_app.get_states(bbox=(lat - 1, lat + 1, lon - 1, lon + 1)).states
-        print("gotten states owo", flush=True)
-        state_history.append(new_states)
-    except:
-        # This one except case is the only formatting warning I
-        # can't remove since I don't know what it will throw.
-        print("unable to get states", flush=True)
-    time.sleep(30)
+    dt = 5.0
+    while True:
+        for plane in planes:
+            plane.timeStep(dt)
+        time.sleep(dt)
 
 
 if __name__ == "__main__":
-    # z = threading.Thread(target=get_updated_states, args=())
-    # z.start()
+    z = threading.Thread(target=get_updated_states, args=())
+    z.start()
     web_app.run()
