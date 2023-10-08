@@ -37,6 +37,7 @@ mods = ["B707",
         "F-111",
         "E-4"]
 
+
 class Plane:
     def __init__(self, reg, mod, lat, lon, alt, vspeed, hspeed, head, arv=None, dep=None):
         self.reg = reg
@@ -50,10 +51,10 @@ class Plane:
         self.arv = arv
         self.dep = dep
 
-    def timeStep(self):
-        self.alt = self.alt + self.vspeed * 15.0  # Reduce altitude
-        self.vspeed += rnd.gauss(0.0, 7.5) # Change vertical speed
-        self.lat += ((self.hspeed * 1.68781) * sin(pi * self.head / 180.0) * 15.0) / 364000.0
-        self.lon += ((self.hspeed * 1.68781) * cos(pi * self.head / 180.0) * 15) / 327360.0
+    def timeStep(self, dt):
+        self.alt = self.alt + self.vspeed * dt  # Reduce altitude
+        self.vspeed += rnd.gauss(0.0, 7.5)  # Change vertical speed
+        self.lat += ((self.hspeed * 1.68781) * sin(pi * self.head / 180.0) * dt) / 364000.0
+        self.lon += ((self.hspeed * 1.68781) * cos(pi * self.head / 180.0) * dt) / 327360.0
         self.hspeed += rnd.gauss(0.0, 2.0)
         self.head += rnd.gauss(0.0, 1.0)
