@@ -12,7 +12,7 @@ var planeIcon = L.icon({
 
     iconSize:     [32, 32], // size of the icon
     iconAnchor:   [16, 16], // point of the icon which will correspond to marker's location
-    popupAnchor:  [16, 0] // point from which the popup should open relative to the iconAnchor
+    popupAnchor:  [322, 16] // point from which the popup should open relative to the iconAnchor
 });
 
 
@@ -174,4 +174,69 @@ function updateTable(reg) {
 }
 document.getElementById('airportForm').addEventListener('submit', handleFormSubmission);
 
+function updateViewAngle(){
+    if (select == null) {
+        console.log("Select a plane first.");
+        return
+    }
+
+    if ("geolocation" in navigator) {
+        navigator.geolocation.getCurrentPosition(position => {
+            const { latitude, longitude } = position.coords;
+
+            // Remove existing location marker
+            if (typeof deviceMarker !== "undefined") {
+                map.removeLayer(deviceMarker);
+            }
+
+            // Add a marker for the device's location
+            deviceMarker = L.marker([latitude, longitude]).addTo(map);
+
+            // Pan the map to the device's location
+            map.setView([latitude, longitude], 13);
+
+             // Pull in current plane info
+            current_planes.forEach(plane => {
+                if(plane.reg === reg) {
+                    dispPlane = plane;
+                }
+
+                plat = dispPlane['lat'];
+                plon = dispPlane['lon'];
+
+                dlat = Math.abs(latitude - plat);
+                dlon = Math.abs(longitude - plon);
+
+                d_per_unit = (2.0 * Math.pi * 6371000.0) / 360.0;
+
+                distance_lat = d_per_unit * dlat;
+                distance_lon = d_per_unit * dlat * Math.cos(longitude);
+
+                distance = Math.sqrt(distance_lat^2 + distance_lon^2);
+
+                angle = Math.atan2(distance_lon/distance_lat);
+
+                angle_up = Math.atan(dispPlane["alt"]/distance);
+
+                // Convert rad to deg
+                angle = angle * Math.pi / 180.0;
+                angle_up = angle_up * Math.pi / 180.0;
+
+                console.log(angle);
+                console.log(angle_up)
+                document.getElementById("horiz").innerHTML = angle + "&deg;";
+                document.getElementById("vert").innerHTML = angle_up + "&deg;";
+            });
+
+
+        }, error => {
+            console.error("Error getting device location:", error.message);
+        });
+    } else {
+        console.error("Geolocation is not available in this browser.");
+    }
+
+}
+
+document.getElementById('loc').addEventListener('click', updateViewAngle)
 setInterval(updateMarkers, 15000)
