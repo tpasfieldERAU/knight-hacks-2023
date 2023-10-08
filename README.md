@@ -10,12 +10,16 @@ After missing out on all kinds of cool planes that came through unannounced, we 
 As a stretch goal we hope to use the data and the device's gyroscope to aid in the user locating the aircraft in the distance.
 
 **Current Outline:**
-1. Get Lat/Long of nearby airports to select.
-2. Get all planes nearby using OpenSky Box Method.
-3. Attempt to get flight plan data of aircraft (can't find free API).
-4. (3 Backup) Attempt to make out own filter to guess if a plane is coming in to land.
-5. Attempt to merge device gyroscope/compass/location to indicate where to look for the aircraft.
-6. Text or push notification of desired aircraft.
+1. ~~Create dashboard-type site.~~
+   - ~~Include photo of aircraft model~~
+   - ~~Side panel lists details of aircraft~~
+   - ~~Interface for displaying aircraft location relative to user~~
+2. ~~Get Lat/Long of nearby airports to select.~~
+3. ~~Get all planes nearby using OpenSky Box Method.~~ (API Outage, no suitable replacement)
+4. ~~Attempt to get flight plan data of aircraft (can't find free API).~~ (API Outage, no suitable replacement)
+5. (4 Backup) Attempt to make out own filter to guess if a plane is coming in to land.
+6. ~~Attempt to merge device gyroscope/compass/location to indicate where to look for the aircraft.~~
+7. Text or push notification of desired aircraft.
 
 ## How to run:
 We were unfortunately unable to setup hosting for the app in time. If you would like to experience our app, feel free to clone our repo. To run the app, simply run the `main.py` python script.
