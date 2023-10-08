@@ -6,11 +6,14 @@ import opensky_api
 
 # Local Imports
 import airportsdata as apd
+import plane_generator as pg
 
 # Python Standard Library Imports
 import json
 import sys
 import time
+import random as rnd
+import string
 
 
 # --------- SECRETS MANAGEMENT ---------
@@ -42,12 +45,14 @@ opensky_app = opensky_api.OpenSkyApi(username=secrets["username"], password=secr
 # Load airports db using ICAO standard codes
 airports = apd.load('ICAO')
 
+icao = 'KDAB'
 # Set Daytona as default airport
-airport = airports['KDAB']
+airport = airports[icao]
 
 lat = airport['lat']
 lon = airport['lon']
 
+planes = []
 
 # --------- START AJAX FUNCTIONS ---------
 # Index page load
@@ -62,13 +67,42 @@ def states():
     return state_history[len(state_history)-1]
 
 
+# Get initial marker coordinates
+# Gets initial coordinates for demo. Overall unnecessary.
+@web_app.route('/get_coordinates', methods=['GET'])
+def get_coordinates():
+    count = rnd.randint(5, 45)
+    global planes
+
+    js_planes = []
+    for i in range(count):
+        reg = "N" + str(rnd.randint(100, 999)) + rnd.choice(string.ascii_uppercase) + rnd.choice(string.ascii_uppercase)
+        mod = pg.mods[rnd.randint(0, len(pg.mods)-1)]
+        alt = rnd.randint(1500, 50000)
+        plat = lat + rnd.gauss(0.0, 0.5)
+        plon = lon + rnd.gauss(0.0, 0.5)
+        hspeed = rnd.randint(70, 300)
+        vspeed = rnd.gauss(0.0, 25.0)
+        head = rnd.randint(0, 359)
+
+        if round(rnd.random()):
+            arv = icao
+            dep = "KDUL"
+            plane = pg.Plane(reg, mod, plat, plon, alt, vspeed, hspeed, head, arv, dep)
+        else:
+            plane = pg.Plane(reg, mod, plat, plon, alt, vspeed, hspeed, head)
+        planes.append(plane)
+        js_planes.append(vars(plane))
+    return jsonify(js_planes)
+
 # Update coordinates in some form. This can later call the API.
 @web_app.route('/update_coordinates', methods=['POST'])
 def update_coordinates():
-    new_coords = [
-        {"lat": 29.1802, "lon": -81.0598, "name": "KDAB"}
-    ]
-    return jsonify(new_coords)
+    js_planes = []
+    for plane in planes:
+        plane.timeStep()
+        js_planes.append(vars(plane))
+    return jsonify(js_planes)
 
 
 # Set airport based on form input.

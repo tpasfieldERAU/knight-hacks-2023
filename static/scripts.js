@@ -18,9 +18,9 @@ function updateMarkers() {
 
             // Add new markers
             data.forEach(item => {
-                const { lat, lon, name } = item;
+                const { reg, mod, lat, lon, alt, vspeed, hspeed, head, arv, dep } = item;
                 const marker = L.marker([lat, lon]).addTo(map);
-                marker.bindPopup(name);
+                marker.bindPopup(reg);
             });
         })
         .catch(error => {
@@ -28,8 +28,23 @@ function updateMarkers() {
         });
 }
 
-// Attach the updateMarkers function to the button click event
-document.getElementById('updateButton').addEventListener('click', updateMarkers);
+
+// Load initial markers from Flask
+fetch('/get_coordinates', { method: 'GET' })
+    .then(response => response.json())
+    .then(data => {
+        // Add initial markers
+        data.forEach(item => {
+            const { reg, mod, lat, lon, alt, vspeed, hspeed, head, arv, dep} = item;
+            const marker = L.marker([lat, lon]).addTo(map);
+            marker.bindPopup(reg + "\n" + mod);
+        });
+    })
+    .catch(error => {
+        console.error('Error loading initial coordinates:', error);
+    });
+
+
 
 function updateDeviceLocation() {
     // Check if geolocation is available in the browser
@@ -44,7 +59,6 @@ function updateDeviceLocation() {
 
             // Add a marker for the device's location
             deviceMarker = L.marker([latitude, longitude]).addTo(map);
-            deviceMarker.bindPopup("Your Location").openPopup();
 
             // Pan the map to the device's location
             map.setView([latitude, longitude], 13);
@@ -85,3 +99,5 @@ function handleFormSubmission(event) {
 }
 
 document.getElementById('airportForm').addEventListener('submit', handleFormSubmission);
+
+setInterval(updateMarkers, 15000)
