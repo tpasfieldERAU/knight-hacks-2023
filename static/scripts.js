@@ -1,4 +1,6 @@
-const map = L.map('map').setView([27.1923, -81.372], 9);
+const map = L.map('map').setView([29.1802, -81.0598], 11);
+let current_planes = [];
+let select = null;
 
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -16,16 +18,29 @@ function updateMarkers() {
                 }
             });
 
+            current_planes = [];
             // Add new markers
             data.forEach(item => {
                 const { reg, mod, lat, lon, alt, vspeed, hspeed, head, arv, dep } = item;
                 const marker = L.marker([lat, lon]).addTo(map);
                 marker.bindPopup(reg);
+
+                marker.on('click', function () {
+                    // Handle the marker click event
+                    select = marker.getPopup().getContent();
+                    updateTable(select);
+                });
+
+                const plane = {reg:reg, mod:mod, lat:lat, lon:lon, alt:alt, vspeed:vspeed, hspeed:hspeed, head:head, arv:arv, dep:dep}
+                current_planes.push(plane)
             });
         })
         .catch(error => {
             console.error('Error updating coordinates:', error);
         });
+    if (select != null) {
+        updateTable(select);
+    }
 }
 
 
@@ -37,7 +52,16 @@ fetch('/get_coordinates', { method: 'GET' })
         data.forEach(item => {
             const { reg, mod, lat, lon, alt, vspeed, hspeed, head, arv, dep} = item;
             const marker = L.marker([lat, lon]).addTo(map);
-            marker.bindPopup(reg + "\n" + mod);
+            marker.bindPopup(reg);
+
+            marker.on('click', function () {
+                // Handle the marker click event
+                select = marker.getPopup().getContent();
+                updateTable(select);
+            });
+
+            const plane = {reg:reg, mod:mod, lat:lat, lon:lon, alt:alt, vspeed:vspeed, hspeed:hspeed, head:head, arv:arv, dep:dep}
+            current_planes.push(plane)
         });
     })
     .catch(error => {
@@ -98,6 +122,22 @@ function handleFormSubmission(event) {
     // document.getElementById('latitude').value = '';
 }
 
+function updateTable(reg) {
+    current_planes.forEach(plane => {
+        if(plane.reg === reg) {
+            dispPlane = plane
+        }
+    });
+    document.getElementById('bigreg').innerHTML = dispPlane["reg"];
+    document.getElementById('reg').innerHTML = dispPlane["reg"];
+    document.getElementById('mod').innerHTML = dispPlane["mod"];
+    document.getElementById('alt').innerHTML = dispPlane["alt"];
+    document.getElementById('hspeed').innerHTML = dispPlane["hspeed"];
+    document.getElementById('vspeed').innerHTML = dispPlane["vspeed"];
+    document.getElementById('head').innerHTML = dispPlane["head"];
+    document.getElementById('dep').innerHTML = dispPlane["dep"];
+    document.getElementById('arv').innerHTML = dispPlane["arv"];
+}
 document.getElementById('airportForm').addEventListener('submit', handleFormSubmission);
 
 setInterval(updateMarkers, 15000)
