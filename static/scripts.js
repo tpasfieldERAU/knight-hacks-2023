@@ -119,7 +119,31 @@ function handleFormSubmission(event) {
     });
 
     // Clear the form fields
-    // document.getElementById('latitude').value = '';
+    document.getElementById('icao').value = '';
+
+    fetch('/get_coordinates', { method: 'GET' })
+    .then(response => response.json())
+    .then(data => {
+        // Add initial markers
+        data.forEach(item => {
+            const { reg, mod, lat, lon, alt, vspeed, hspeed, head, arv, dep} = item;
+            const marker = L.marker([lat, lon]).addTo(map);
+            marker.bindPopup(reg);
+
+            marker.on('click', function () {
+                // Handle the marker click event
+                select = marker.getPopup().getContent();
+                updateTable(select);
+            });
+
+            const plane = {reg:reg, mod:mod, lat:lat, lon:lon, alt:alt, vspeed:vspeed, hspeed:hspeed, head:head, arv:arv, dep:dep}
+            current_planes.push(plane)
+        });
+    })
+    .catch(error => {
+        console.error('Error loading initial coordinates:', error);
+    });
+
 }
 
 function updateTable(reg) {

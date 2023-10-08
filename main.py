@@ -71,7 +71,7 @@ def states():
 # Gets initial coordinates for demo. Overall unnecessary.
 @web_app.route('/get_coordinates', methods=['GET'])
 def get_coordinates():
-    count = rnd.randint(5, 45)
+    count = rnd.randint(5, 65)
     global planes
 
     js_planes = []
@@ -79,8 +79,8 @@ def get_coordinates():
         reg = "N" + str(rnd.randint(100, 999)) + rnd.choice(string.ascii_uppercase) + rnd.choice(string.ascii_uppercase)
         mod = pg.mods[rnd.randint(0, len(pg.mods)-1)]
         alt = rnd.randint(1500, 50000)
-        plat = lat + rnd.gauss(0.0, 0.5)
-        plon = lon + rnd.gauss(0.0, 0.5)
+        plat = lat + rnd.gauss(0.0, 0.20)
+        plon = lon + rnd.gauss(0.0, 0.20)
         hspeed = rnd.randint(70, 300)
         vspeed = rnd.gauss(0.0, 25.0)
         head = rnd.randint(0, 359)
@@ -109,9 +109,12 @@ def update_coordinates():
 @web_app.route('/set_airport', methods=['POST'])
 def set_airport():
     global airport
+    global lat
+    global lon
+    global icao
+
     data = request.get_json()
     icao = str(data)
-
     try:
         airport = airports[icao]
     except KeyError:
@@ -120,6 +123,8 @@ def set_airport():
         print("Error in airport search. Likely invalid ICAO code.")
 
     airport_coords = {'lat': airport['lat'], 'lon': airport['lon']}
+    lat = airport['lat']
+    lon = airport['lon']
     return jsonify(airport_coords)
 
 
