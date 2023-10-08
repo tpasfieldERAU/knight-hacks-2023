@@ -24,3 +24,7 @@ We were unfortunately unable to setup hosting for the app in time. If you would 
     python3 main.py
 
 Because it is not deployed and we are just putting API keys public, the API calls will not work and it should instead fall back to demo data.
+
+---
+
+Thank you for the opportunity to participate in the 2023 Knight Hacks Hackathon! We really enjoyed, and it was amazing to be able to dedicate time to a random project idea of ours. We hope to come up with some ideas for next year and maybe even go after a challenge prize! MATLAB would be a good target for us, I bet!
