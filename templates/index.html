@@ -8,65 +8,109 @@
   <link rel='stylesheet' href='https://fonts.googleapis.com/css?family=Roboto'>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans&display=swap" rel="stylesheet">
+
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 
   <style>
-    html,body,h1,h2,h3,h4,h5,h6 {font-family: "Roboto", sans-serif}
+	html,body,h1,h2,h3,h4,h5,h6 {font-family: 'Noto Sans', sans-serif;}
+
+  .photo {
+      background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.0), rgba(255, 255, 255, 1.0)),
+      url('{{ url_for("static", filename="daniel-eledut-unsplash-b787.jpg") }}');
+      width: 100%;
+      height: 426px;
+      padding: 20px;
+    }
   </style>
 
   <style>
-    html, body {
-      height: 100%;
-      margin: 0;
-    }
-    .leaflet-container {
-      height: 400px;
-      width: 600px;
-      max-width: 100%;
-      max-height: 100%;
-    }
+	html, body {
+	  height: 100%;
+	  margin: 0;
+	}
+	.leaflet-container {
+	  height: 400px;
+	  width: 600px;
+	  max-width: 100%;
+	  max-height: 100%;
+	}
+
   </style>
 </head>
 <body class="w3-light-grey">
 
 <!-- Page Container -->
-<div class="w3-content w3-margin-top" style="max-width:1400px;">
+<div class="w3-content w3-margin-top w3-margin-bottom" style="max-width:2100px;">
 
   <!-- The Grid -->
   <div class="w3-row-padding">
   
-    <!-- Left Column -->
-    <div class="w3-third">
-    
-      <div class="w3-white w3-text-grey w3-card-4">
-        <h1 class="w3-text-grey w3-padding-16">Planespot Assistant</h1>
+	<!-- Left Column -->
+	<div class="w3-third">
 
+	  <div class="w3-white w3-text-grey w3-card w3-padding-16">
+		  <div class="w3-container">
+		    <h1 class="w3-text-grey w3-padding-16">Planespot Assistant</h1>
+		  </div>
+      <div class="w3-container">
         <form id="airportForm">
-            <label for="icao">Airport ICAO Code:</label>
-            <input type="text" id="icao" name="icao" required>
-            <br>
-            <button type="submit">Set Airport</button>
+          <label for="icao"><h4>Airport ICAO Code:</h4></label>
+		    <input type="text" id="icao" name="icao" required>
+		    <br>
+		    <button type="submit">Set Airport</button>
+		  </form>
+      </div>
+
+      <div class="w3-container">
+        <h3><b>OR</b></h3>
+      </div>
+
+      <div class="w3-container">
+        <form id="locationForm">
+          <label for="locationPerm"><h4>Use Current Location:</h4></label>
+          <button type="button" id="locationPerm" name="locationPerm" required>Allow Location</button>
         </form>
       </div>
 
-    <!-- End Left Column -->
-    </div>
-
-    <!-- Right Column -->
-    <div class="w3-twothird">
-
-      <div class="w3-text-grey w3-card w3-white">
-        <h2 class="w3-text-grey w3-padding-16">Test Text</h2>
-        <div id="map" style="width: 100%; height: 600px;"></div>
-        <button id="updateButton">Update Coordinates</button>
-        <script src="../static/scripts.js"></script>
-
+	  </div>
+    <br>
+    <div class="w3-white w3-text-grey w3-card w3-padding-16">
+      <div class="w3-container">
+        <h3>Current Plane:</h3>
       </div>
 
-    <!-- End Right Column -->
+      <div class="w3-display-container" style="margin: 2.5%">
+          <div class="photo">
+            <div class="w3-display-bottomleft w3-container">
+            <h2># REG NUMBER</h2>
+            <h4>Photo by <a href="https://unsplash.com/@pixtolero2?utm_content=creditCopyText&utm_medium=referral&utm_source=unsplash">Daniel Eledut</a> on <a href="https://unsplash.com/photos/qfPuby0S040?utm_content=creditCopyText&utm_medium=referral&utm_source=unsplash">Unsplash</a>
+            </h4>
+          </div>
+          </div>
+        </div>
     </div>
-    
+	<!-- End Left Column -->
+	</div>
+
+	<!-- Right Column -->
+	<div class="w3-twothird">
+
+	  <div class="w3-text-grey w3-card w3-white">
+      <div class="w3-container">
+        <h2 class="w3-text-grey w3-padding-16">Test Text</h2>
+      </div>
+		  <div id="map" style="width: 100%; height: 600px; margin-top: 16px; margin-bottom: 16px"></div>
+		  <button id="updateButton">Update Coordinates</button>
+		  <script src="../static/scripts.js"></script>
+	  </div>
+
+	<!-- End Right Column -->
+	</div>
+
   <!-- End Grid -->
   </div>
   
