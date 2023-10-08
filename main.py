@@ -3,7 +3,7 @@
 import flask
 from flask import jsonify, request
 import opensky_api
-import threading
+import pyowm
 
 # Local Imports
 import airportsdata as apd
@@ -15,6 +15,7 @@ import sys
 import time
 import random as rnd
 import string
+import threading
 
 
 # --------- SECRETS MANAGEMENT ---------
@@ -28,6 +29,7 @@ except FileNotFoundError:
     # It's a JSON file.
     # dict with username and password values for opensky network login
 
+owm = pyowm.OWM(secrets["wkey"])
 
 # ---------- VARIABLE INITS ------------
 # IDK, you can comment this lmao
@@ -54,6 +56,13 @@ lat = airport['lat']
 lon = airport['lon']
 
 planes = []
+
+mgr = owm.weather_manager()
+weather = mgr.weather_at_coords(lat, lon).weather
+temp = weather.temperature("fahrenheit")['temp']
+rain = "Not Yet Implemented"  # weather.rain
+rain_level = weather.detailed_status  # rain["1hr"]
+vis = weather.visibility(unit="miles")
 
 # --------- START AJAX FUNCTIONS ---------
 # Index page load
@@ -126,6 +135,22 @@ def set_airport():
     lat = airport['lat']
     lon = airport['lon']
     return jsonify(airport_coords)
+
+
+@web_app.route('/get_weather', methods=['GET'])
+def get_weather():
+    return jsonify([{'temp':temp, 'rain':rain_level, 'vis':vis}])
+
+@web_app.route('/update_weather', methods=['POST'])
+def update_weather():
+    weather = mgr.weather_at_coords(lat, lon).weather
+    temp = weather.temperature("fahrenheit")['temp']
+    rain = "Not Yet Implemented"  # weather.rain
+    rain_level = weather.detailed_status  # rain["1hr"]
+    print(rain_level)
+    vis = weather.visibility(unit="miles")
+    return jsonify([{'temp':temp, 'rain':rain_level, 'vis':vis}])
+
 
 
 # -------- GENERAL FUNCTIONS ---------

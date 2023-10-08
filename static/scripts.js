@@ -1,6 +1,7 @@
 const map = L.map('map').setView([29.1802, -81.0598], 11);
 let current_planes = [];
 let select = null;
+let weather = null;
 
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -78,7 +79,18 @@ fetch('/get_coordinates', { method: 'GET' })
         console.error('Error loading initial coordinates:', error);
     });
 
+fetch('/get_weather', { method: 'GET'})
+    .then(response => response.json())
+    .then(data => {
+        data.forEach(item => {
+            const {temp, rain, vis} = item;
+            weather = {temp:temp, rain:rain, vis:vis};
 
+            document.getElementById("temp").innerHTML = weather["temp"];
+            document.getElementById("rain").innerHTML = weather["rain"];
+            document.getElementById("vis").innerHTML = weather["vis"];
+        });
+    });
 
 function updateDeviceLocation() {
     // Check if geolocation is available in the browser
@@ -123,6 +135,8 @@ function handleFormSubmission(event) {
         // Handle the response from the server, which may include updated marker data
         const {lat, lon} = data;
         map.setView([lat, lon], 12);
+
+        updateWeather();
     })
     .catch(error => {
         console.error('Error setting airport:', error);
@@ -153,7 +167,27 @@ function handleFormSubmission(event) {
     .catch(error => {
         console.error('Error loading initial coordinates:', error);
     });
+}
 
+function updateWeather() {
+    fetch('/update_weather', { method: 'POST' })
+        .then(response => response.json())
+        .then(data => {
+            data.forEach(item => {
+                const {temp, rain, vis} = item;
+                weather = {temp: temp, rain: rain, vis: vis};
+
+                document.getElementById("temp").innerHTML = weather["temp"];
+                document.getElementById("rain").innerHTML = weather["rain"];
+                document.getElementById("vis").innerHTML = weather["vis"];
+            });
+        })
+        .catch(error => {
+            console.error('Error updating weather:', error);
+        });
+    if (select != null) {
+        updateTable(select);
+    }
 }
 
 function updateTable(reg) {
