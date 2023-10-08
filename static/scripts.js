@@ -6,6 +6,16 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
 }).addTo(map);
 
+
+var planeIcon = L.icon({
+    iconUrl: '/static/plane.png',
+
+    iconSize:     [32, 32], // size of the icon
+    iconAnchor:   [16, 16], // point of the icon which will correspond to marker's location
+    popupAnchor:  [16, 0] // point from which the popup should open relative to the iconAnchor
+});
+
+
 // Function to update markers on the map
 function updateMarkers() {
     fetch('/update_coordinates', { method: 'POST' })
@@ -22,7 +32,7 @@ function updateMarkers() {
             // Add new markers
             data.forEach(item => {
                 const { reg, mod, lat, lon, alt, vspeed, hspeed, head, arv, dep } = item;
-                const marker = L.marker([lat, lon]).addTo(map);
+                const marker = L.marker([lat, lon], {icon: planeIcon}).addTo(map);
                 marker.bindPopup(reg);
 
                 marker.on('click', function () {
@@ -51,7 +61,7 @@ fetch('/get_coordinates', { method: 'GET' })
         // Add initial markers
         data.forEach(item => {
             const { reg, mod, lat, lon, alt, vspeed, hspeed, head, arv, dep} = item;
-            const marker = L.marker([lat, lon]).addTo(map);
+            const marker = L.marker([lat, lon], {icon: planeIcon}).addTo(map);
             marker.bindPopup(reg);
 
             marker.on('click', function () {
@@ -127,7 +137,7 @@ function handleFormSubmission(event) {
         // Add initial markers
         data.forEach(item => {
             const { reg, mod, lat, lon, alt, vspeed, hspeed, head, arv, dep} = item;
-            const marker = L.marker([lat, lon]).addTo(map);
+            const marker = L.marker([lat, lon], {icon: planeIcon}).addTo(map);
             marker.bindPopup(reg);
 
             marker.on('click', function () {
