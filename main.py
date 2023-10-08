@@ -19,17 +19,21 @@ import threading
 
 
 # --------- SECRETS MANAGEMENT ---------
+flag = True
+
 try:
     f = open("secrets.json")
     secrets = json.load(f)
     f.close()
-except FileNotFoundError:
-    print("Secrets file does not exist! ADD IT :(")
-    sys.exit()
+except:
+    flag = False
+    # print("Secrets file does not exist! ADD IT :(")
+    # sys.exit()
     # It's a JSON file.
     # dict with username and password values for opensky network login
 
-owm = pyowm.OWM(secrets["wkey"])
+if flag:
+    owm = pyowm.OWM(secrets["wkey"])
 
 # ---------- VARIABLE INITS ------------
 # IDK, you can comment this lmao
@@ -42,7 +46,7 @@ state_history = [[{
 
 # Init server and api objects
 web_app = flask.Flask(__name__)
-opensky_app = opensky_api.OpenSkyApi(username=secrets["username"], password=secrets["password"])
+if flag:opensky_app = opensky_api.OpenSkyApi(username=secrets["username"], password=secrets["password"])
 
 
 # Load airports db using ICAO standard codes
@@ -57,12 +61,13 @@ lon = airport['lon']
 
 planes = []
 
-mgr = owm.weather_manager()
-weather = mgr.weather_at_coords(lat, lon).weather
-temp = weather.temperature("fahrenheit")['temp']
-rain = "Not Yet Implemented"  # weather.rain
-rain_level = weather.detailed_status  # rain["1hr"]
-vis = weather.visibility(unit="miles")
+if flag:
+    mgr = owm.weather_manager()
+    weather = mgr.weather_at_coords(lat, lon).weather
+    temp = weather.temperature("fahrenheit")['temp']
+    rain = "Not Yet Implemented"  # weather.rain
+    rain_level = weather.detailed_status  # rain["1hr"]
+    vis = weather.visibility(unit="miles")
 
 # --------- START AJAX FUNCTIONS ---------
 # Index page load
@@ -139,10 +144,14 @@ def set_airport():
 
 @web_app.route('/get_weather', methods=['GET'])
 def get_weather():
+    if not flag:
+        return jsonify([{'temp':"Missing Weather API", 'rain':"Missing Weather API", 'vis':"Missing Weather API"}])
     return jsonify([{'temp':temp, 'rain':rain_level, 'vis':vis}])
 
 @web_app.route('/update_weather', methods=['POST'])
 def update_weather():
+    if not flag:
+        return jsonify([{'temp': "Missing Weather API", 'rain': "Missing Weather API", 'vis': "Missing Weather API"}])
     weather = mgr.weather_at_coords(lat, lon).weather
     temp = weather.temperature("fahrenheit")['temp']
     rain = "Not Yet Implemented"  # weather.rain

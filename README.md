@@ -16,3 +16,11 @@ As a stretch goal we hope to use the data and the device's gyroscope to aid in t
 4. (3 Backup) Attempt to make out own filter to guess if a plane is coming in to land.
 5. Attempt to merge device gyroscope/compass/location to indicate where to look for the aircraft.
 6. Text or push notification of desired aircraft.
+
+## How to run:
+We were unfortunately unable to setup hosting for the app in time. If you would like to experience our app, feel free to clone our repo. To run the app, simply run the `main.py` python script.
+
+    cd knight-hacks-2023
+    python3 main.py
+
+Because it is not deployed and we are just putting API keys public, the API calls will not work and it should instead fall back to demo data.
