@@ -1,4 +1,4 @@
-const map = L.map('map').setView([45.0, -35.0], 3);
+const map = L.map('map').setView([27.1923, -81.372], 9);
 
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -31,21 +31,6 @@ function updateMarkers() {
 // Attach the updateMarkers function to the button click event
 document.getElementById('updateButton').addEventListener('click', updateMarkers);
 
-// Load initial markers from Flask
-fetch('/get_coordinates', { method: 'GET' })
-    .then(response => response.json())
-    .then(data => {
-        // Add initial markers
-        data.forEach(item => {
-            const { lat, lon, name } = item;
-            const marker = L.marker([lat, lon]).addTo(map);
-            marker.bindPopup(name);
-        });
-    })
-    .catch(error => {
-        console.error('Error loading initial coordinates:', error);
-    });
-
 function updateDeviceLocation() {
     // Check if geolocation is available in the browser
     if ("geolocation" in navigator) {
@@ -62,7 +47,7 @@ function updateDeviceLocation() {
             deviceMarker.bindPopup("Your Location").openPopup();
 
             // Pan the map to the device's location
-            // map.setView([latitude, longitude], 13);
+            map.setView([latitude, longitude], 13);
         }, error => {
             console.error("Error getting device location:", error.message);
         });
@@ -100,9 +85,3 @@ function handleFormSubmission(event) {
 }
 
 document.getElementById('airportForm').addEventListener('submit', handleFormSubmission);
-
-// Call the updateDeviceLocation function to initially set the device's location
-updateDeviceLocation();
-
-// Set an interval to periodically update the device's location
-setInterval(updateDeviceLocation, 300000); // Update every 5 minutes.
